@@ -168,6 +168,7 @@
                             </activityIndicatorView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" maximumZoomScale="2" translatesAutoresizingMaskIntoConstraints="NO" id="QtE-cu-g7d">
                                 <rect key="frame" x="0.0" y="64" width="608" height="536"/>
+                                <gestureRecognizers/>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -193,9 +194,14 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="optional 📷" id="7vD-Yd-RFw">
-                        <barButtonItem key="rightBarButtonItem" title="Back" id="Vh0-WT-jBY">
+                        <barButtonItem key="leftBarButtonItem" title="Back" id="TcD-Eb-LKX">
                             <connections>
-                                <action selector="done:" destination="ps2-uM-eeL" id="Wuk-9R-8cO"/>
+                                <action selector="back:" destination="ps2-uM-eeL" id="fMH-RH-S3D"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Save to Album" id="20J-wS-WFr">
+                            <connections>
+                                <action selector="savePhoto:" destination="ps2-uM-eeL" id="dOV-Y4-rQe"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -206,7 +212,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BNn-J8-wKN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2570" y="251"/>
+            <point key="canvasLocation" x="2525" y="246"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="PJD-qI-nVr">

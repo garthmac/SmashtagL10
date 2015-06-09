@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AssetsLibrary
 
 class ImageViewController: UIViewController, UIScrollViewDelegate {
     
@@ -80,7 +81,15 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         }
     }
     
-    @IBAction func done(sender: AnyObject) {
+    @IBAction func savePhoto(sender: UIBarButtonItem) {
+        if let imageData = UIImageJPEGRepresentation(image, 1.0) {
+            let library = ALAssetsLibrary()
+            library.writeImageDataToSavedPhotosAlbum(imageData, metadata: nil, completionBlock: nil)
+        }
+    }
+
+    
+    @IBAction func back(sender: AnyObject) {
         presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
