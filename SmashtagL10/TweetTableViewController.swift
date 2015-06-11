@@ -29,10 +29,19 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         tableView.rowHeight = UITableViewAutomaticDimension
         refresh()
         // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+        self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    var deletes = 0
+    override  func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            tableView.beginUpdates()
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+            deletes += 1
+            tableView.endUpdates()
+        }
     }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
@@ -121,13 +130,16 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return tweets.count
+        return 1 //tweets.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return tweets[section].count
+        if tweets.count != 0 {
+            return tweets[section].count - deletes
+        }
+        return 0
     }
 
     private struct Storyboard {
@@ -136,11 +148,8 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier(Storyboard.CellReuseIdentifier, forIndexPath: indexPath) as! TweetTableViewCell
-
         // Configure the cell...
         cell.tweet = tweets[indexPath.section][indexPath.row]
-//        cell.textLabel?.text = tweet.text
-//        cell.detailTextLabel?.text = tweet.user.name
         return cell
     }
 
@@ -150,8 +159,14 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
             let selectedIndex = self.tableView.indexPathForCell(sender as! UITableViewCell)
             if let cell = tableView(tableView, cellForRowAtIndexPath: selectedIndex!) as? TweetTableViewCell {
                 let tweet = cell.tweet
-                if tweet!.media.count == 0 && tweet!.urls.count == 0 {
-                    return false
+                if tweet!.media.count == 0 {
+                    if tweet!.urls.count == 0 {
+                        return false
+                    } else {
+                        if tweet!.urls.first!.keyword.hasSuffix("…") {
+                            return false
+                        }
+                    }
                 }
             }
         }
@@ -176,7 +191,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
                     }
                     if tweet!.urls.count > 0 {
                         if let url = NSURL(string: tweet!.urls.first!.keyword) {
-                            UIApplication.sharedApplication().openURL(url)
+                            if NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
+                                UIApplication.sharedApplication().openURL(url)
+                            }
                         }
                     }
                 }
@@ -187,6 +204,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     // MARK: - Constants
     private struct Constants {
         static let ShowImageSegue = "Show Image"
+        static let OpenURLs = "TweetTableViewController.OpenURLs"
     }
 
 }

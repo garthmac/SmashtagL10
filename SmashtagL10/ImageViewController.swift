@@ -15,7 +15,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     var imageURL: NSURL? {
         didSet {
             image = nil
-            if view.window != nil { //check if on screen...never happens
+            if view.window != nil { //check if on screen
                 fetchImage()
             }
         }
@@ -43,10 +43,10 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
     @IBOutlet weak var scrollView: UIScrollView! {
         didSet {  //note: frame.size not image
-            scrollView.contentSize = imageView.frame.size
+//            scrollView.contentSize = imageView.frame.size
             scrollView.delegate = self
-            scrollView.minimumZoomScale = 0.03
-            scrollView.maximumZoomScale = 2.0
+//            scrollView.minimumZoomScale = 0.03
+//            scrollView.maximumZoomScale = 2.0
         }
     }
     
@@ -54,33 +54,57 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         return imageView //this last thing + UIScrollViewDelegate at top
     }
     
-    private var imageView = UIImageView()  //no frame yet
+    private var imageView: UIImageView!  //no frame yet
     private var image: UIImage? { // a computed property instead of func
-        get {
+        get { if imageView == nil { return nil }
             return imageView.image
         }
         set {
-            imageView.image = newValue
-            //scrollView.addSubview(imageView) in viewDidLoad()
-            imageView.sizeToFit()
-            //use ? if not set yet
-            scrollView?.contentSize = imageView.frame.size
-            spinner?.stopAnimating()
+            if let image = newValue {
+                imageView = UIImageView(image: image)
+                imageView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size:image.size)
+                scrollView.addSubview(imageView)    //moved from viewDidLoad
+                scrollView.contentSize = image.size
+                let scrollViewFrame = scrollView.frame
+                let scaleWidth = scrollViewFrame.size.width / scrollView.contentSize.width
+                let scaleHeight = scrollViewFrame.size.height / scrollView.contentSize.height
+                let minScale = min(scaleWidth, scaleHeight)
+                scrollView.minimumZoomScale = minScale
+                scrollView.maximumZoomScale = 2.0
+                scrollView.zoomScale = minScale
+            }
+        }
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if imageView != nil {
+            centerScrollViewContents()
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        scrollView.addSubview(imageView)
+    func centerScrollViewContents() {
+        let boundsSize = scrollView.bounds.size
+        var contentsFrame = imageView.frame
+        if contentsFrame.size.width < boundsSize.width {
+            contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0
+        } else {
+            contentsFrame.origin.x = 0.0
+        }
+        if contentsFrame.size.height < boundsSize.height {
+            contentsFrame.origin.y = (boundsSize.height - contentsFrame.size.height) / 2.0
+        } else {
+            contentsFrame.origin.y = 0.0
+        }
+        imageView.frame = contentsFrame
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         if image == nil {
             fetchImage() // this usually happens
         }
     }
-    
+
     @IBAction func savePhoto(sender: UIBarButtonItem) {
         if let imageData = UIImageJPEGRepresentation(image, 1.0) {
             let library = ALAssetsLibrary()
@@ -88,7 +112,6 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         }
     }
 
-    
     @IBAction func back(sender: AnyObject) {
         presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
