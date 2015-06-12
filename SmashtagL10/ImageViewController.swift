@@ -22,10 +22,9 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBOutlet weak var spinner: UIActivityIndicatorView!
-    
     private func fetchImage() {
         if let url = imageURL {
-            spinner?.startAnimating()
+            spinner.startAnimating()
             let qos = Int(QOS_CLASS_USER_INITIATED.value)
             dispatch_async(dispatch_get_global_queue(qos, 0)) { () -> Void in //get .jpg file *slow
                 let imageData = NSData(contentsOfURL: url)
@@ -39,14 +38,13 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                     }
                 }
             }
+            spinner.stopAnimating()
         }
     }
+
     @IBOutlet weak var scrollView: UIScrollView! {
         didSet {  //note: frame.size not image
-//            scrollView.contentSize = imageView.frame.size
             scrollView.delegate = self
-//            scrollView.minimumZoomScale = 0.03
-//            scrollView.maximumZoomScale = 2.0
         }
     }
     
@@ -54,15 +52,13 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
         return imageView //this last thing + UIScrollViewDelegate at top
     }
     
-    private var imageView: UIImageView!  //no frame yet
+    private var imageView = UIImageView()  //no frame yet
     private var image: UIImage? { // a computed property instead of func
-        get { if imageView == nil { return nil }
-            return imageView.image
-        }
+        get { return imageView.image }
         set {
             if let image = newValue {
                 imageView = UIImageView(image: image)
-                imageView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size:image.size)
+                imageView.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: image.size)
                 scrollView.addSubview(imageView)    //moved from viewDidLoad
                 scrollView.contentSize = image.size
                 let scrollViewFrame = scrollView.frame
@@ -77,9 +73,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if imageView != nil {
-            centerScrollViewContents()
-        }
+        centerScrollViewContents()
     }
     
     func centerScrollViewContents() {

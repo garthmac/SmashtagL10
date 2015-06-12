@@ -12,6 +12,19 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
     
     var tweets = [[Tweet]]()
 
+    @IBOutlet weak var searchTextField: UITextField! {
+        didSet {
+            searchTextField.delegate = self
+            searchTextField.text = searchText
+        }
+    }
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        if textField == searchTextField {
+            textField.resignFirstResponder()
+            searchText = textField.text
+        }
+        return true
+    }
     var searchText: String = "" {
         didSet {
             lastSucessfulRequest = nil
@@ -87,6 +100,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
             if let request = nextRequestToAttempt {
                 request.fetchTweets { (newTweets) -> Void in
                     dispatch_async(dispatch_get_main_queue()) { () -> Void in
+                        self.deletes = 0 //added for editButtonItem (removed tweets are refreshed visible again)
                         if newTweets.count > 0 {
                             self.lastSucessfulRequest = request
                             self.tweets.insert(newTweets, atIndex: 0)
@@ -109,21 +123,6 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
             queue: nil) { (notification) -> Void in
                 self.searchText = NSUserDefaults.standardUserDefaults().stringForKey("HashTag")!
         }
-    }
-        
-    @IBOutlet weak var searchTextField: UITextField! {
-        didSet {
-            searchTextField.delegate = self
-            searchTextField.text = searchText
-        }
-    }
-    
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
-        if textField == searchTextField {
-            textField.resignFirstResponder()
-            searchText = textField.text
-        }
-        return true
     }
     
     // MARK: - UITableViewDataSource
@@ -166,6 +165,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
                         if tweet!.urls.first!.keyword.hasSuffix("…") {
                             return false
                         }
+                        if !NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
+                            return false
+                        }
                     }
                 }
             }
@@ -176,23 +178,27 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         var destination = segue.destinationViewController as? UIViewController
         if let navCon = destination as? UINavigationController {
             destination = navCon.visibleViewController
-        }
-        if let ivc = destination as? ImageViewController {
-            if segue.identifier == Constants.ShowImageSegue {
-                //prepare
-                let selectedIndex = self.tableView.indexPathForCell(sender as! UITableViewCell)
-                if let cell = tableView(tableView, cellForRowAtIndexPath: selectedIndex!) as? TweetTableViewCell {
-                    let tweet = cell.tweet
-                    let media = tweet!.media
-                    if media.count > 0 {
-                        if let tweetImageURL = media.first!.url {
-                            ivc.imageURL = tweetImageURL
+            let selectedIndex = self.tableView.indexPathForCell(sender as! UITableViewCell)
+            if let cell = tableView(tableView, cellForRowAtIndexPath: selectedIndex!) as? TweetTableViewCell {
+                let tweet = cell.tweet
+                if segue.identifier == Constants.ShowImageSegue {
+                    if tweet!.media.count > 0 {
+                        if let ivc = destination as? ImageViewController {
+                            if let tweetImageURL = tweet!.media.first!.url {
+                                ivc.title = "optional 📷"
+                                ivc.imageURL = tweetImageURL
+                            }
                         }
-                    }
+                    } else if tweet!.urls.count > 0 { openURL(sender) }
+                } else if segue.identifier == Constants.WebSegueIdentifier {
                     if tweet!.urls.count > 0 {
-                        if let url = NSURL(string: tweet!.urls.first!.keyword) {
-                            if NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
-                                UIApplication.sharedApplication().openURL(url)
+                        if let wvc = destination as? WebViewController {
+                            if let url = NSURL(string: tweet!.urls.first!.keyword) {
+                                if NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
+                                    //UIApplication.sharedApplication().openURL(url)
+                                    wvc.title = "Web"
+                                    wvc.url = url
+                                }
                             }
                         }
                     }
@@ -200,11 +206,15 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
             }
         }
     }
-    
+    func openURL(sender: AnyObject) {
+        performSegueWithIdentifier(Constants.WebSegueIdentifier, sender: sender)
+    }
     // MARK: - Constants
     private struct Constants {
         static let ShowImageSegue = "Show Image"
         static let OpenURLs = "TweetTableViewController.OpenURLs"
+        static let WebSegueIdentifier = "Show URL"
     }
 
 }
+

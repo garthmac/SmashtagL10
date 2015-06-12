@@ -11,10 +11,6 @@ uses Settings.bundle for settings
 App gets upto last 100 "Tweets" and displays userProfile image, tweetUserName+camera icon 
   in place of inline image, time of tweet and tweet text 
 - When table cell is selected, will navigate to zoomable/scroll view of image with button
-  for (Save to Album) and/or open website if tweet includes a valid URL (blue text)
+  for (Save to Album) and/or open website if tweet only includes a valid URL (blue text)
 
-Xcode 6.3.2 
-
-Swift
-
-iOS 8.3
+written in Xcode 6.3.2 for iOS8.3+
