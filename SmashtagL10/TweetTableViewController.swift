@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TweetTableViewController: UITableViewController, UITextFieldDelegate {
+class TweetTableViewController: UITableViewController, UITextFieldDelegate, TableViewCellDelegate {
     
     var tweets = [[Tweet]]()
 
@@ -149,6 +149,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
         let cell = tableView.dequeueReusableCellWithIdentifier(Storyboard.CellReuseIdentifier, forIndexPath: indexPath) as! TweetTableViewCell
         // Configure the cell...
         cell.tweet = tweets[indexPath.section][indexPath.row]
+        cell.delegate = self
         return cell
     }
 
@@ -196,7 +197,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
                             if let url = NSURL(string: tweet!.urls.first!.keyword) {
                                 if NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
                                     //UIApplication.sharedApplication().openURL(url)
-                                    wvc.title = "Web"
+                                    wvc.title = "\(url)"
                                     wvc.url = url
                                 }
                             }
@@ -206,6 +207,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate {
             }
         }
     }
+    // MARK: - TableViewCellDelegate
     func openURL(sender: AnyObject) {
         performSegueWithIdentifier(Constants.WebSegueIdentifier, sender: sender)
     }
