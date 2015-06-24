@@ -17,11 +17,9 @@ public struct User: Printable
     public var profileImageURL: NSURL?
     public var verified: Bool = false
     public var id: String! = ""
-    
     public var description: String { var v = verified ? " ✅" : ""; return "@\(screenName) (\(name))\(v)" }
 
     // MARK: - Private Implementation
-
     init?(data: NSDictionary?) {
         let name = data?.valueForKeyPath(TwitterKey.Name) as? String
         let screenName = data?.valueForKeyPath(TwitterKey.ScreenName) as? String
@@ -50,7 +48,6 @@ public struct User: Printable
         return dictionary
     }
 
-    
     init() {
         self.screenName = "Unknown"
         self.name = "Unknown"

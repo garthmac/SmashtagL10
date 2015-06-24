@@ -38,8 +38,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
                     }
                 }
             }
-            spinner.stopAnimating()
         }
+        spinner.stopAnimating()
     }
 
     @IBOutlet weak var scrollView: UIScrollView! {

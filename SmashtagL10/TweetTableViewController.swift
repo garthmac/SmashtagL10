@@ -18,6 +18,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
             searchTextField.text = searchText
         }
     }
+    // MARK: - UITextFieldDelegate
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if textField == searchTextField {
             textField.resignFirstResponder()
