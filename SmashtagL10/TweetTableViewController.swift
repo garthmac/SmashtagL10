@@ -26,7 +26,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
         }
         return true
     }
-    var searchText: String = "" {
+    var searchText: String = "#Standford" {
         didSet {
             lastSucessfulRequest = nil
             searchTextField?.text = searchText
@@ -122,7 +122,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
         udObserver = NSNotificationCenter.defaultCenter().addObserverForName(NSUserDefaultsDidChangeNotification,
             object: nil,
             queue: nil) { (notification) -> Void in
-                self.searchText = NSUserDefaults.standardUserDefaults().stringForKey("HashTag")!
+                if let text = NSUserDefaults.standardUserDefaults().stringForKey("HashTag") {
+                    self.searchText = text
+                }
         }
     }
     
