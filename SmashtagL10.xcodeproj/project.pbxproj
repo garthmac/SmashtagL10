@@ -105,6 +105,7 @@
 				88778E7D1AF13397003DED57 /* TweetTableViewCell.swift */,
 				88778E7E1AF13397003DED57 /* TweetTableViewController.swift */,
 				88DA45A01B2A01D500E678BC /* WebViewController.swift */,
+				88778E5A1AF13324003DED57 /* Info.plist */,
 				88778E811AF13525003DED57 /* Twitter */,
 				88778E591AF13324003DED57 /* Supporting Files */,
 			);
@@ -117,7 +118,6 @@
 				88778E5B1AF13324003DED57 /* AppDelegate.swift */,
 				88778E641AF13324003DED57 /* LaunchScreen.xib */,
 				88778E621AF13324003DED57 /* Images.xcassets */,
-				88778E5A1AF13324003DED57 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -194,7 +194,8 @@
 		88778E4E1AF13324003DED57 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Garth MacKenzie";
 				TargetAttributes = {
 					88778E551AF13324003DED57 = {
@@ -317,6 +318,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -386,6 +388,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = SmashtagL10/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.garthmackenzie.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -397,6 +400,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = SmashtagL10/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.garthmackenzie.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -415,6 +419,7 @@
 				);
 				INFOPLIST_FILE = SmashtagL10Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.garthmackenzie.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SmashtagL10.app/SmashtagL10";
 			};
@@ -430,6 +435,7 @@
 				);
 				INFOPLIST_FILE = SmashtagL10Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.garthmackenzie.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SmashtagL10.app/SmashtagL10";
 			};

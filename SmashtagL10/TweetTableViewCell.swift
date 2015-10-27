@@ -34,7 +34,7 @@ class TweetTableViewCell: UITableViewCell {
     
     func updateUI() {
         // add a pan recognizer
-        var recognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
+        let recognizer = UIPanGestureRecognizer(target: self, action: "handlePan:")
         recognizer.delegate = self
         addGestureRecognizer(recognizer)
 
@@ -67,11 +67,10 @@ class TweetTableViewCell: UITableViewCell {
                 }
             }
             if let profileImageURL = tweet.user.profileImageURL {
-                let qos = Int(QOS_CLASS_USER_INITIATED.value)
-                dispatch_async(dispatch_get_global_queue(qos, 0)) { () -> Void in //get url *slow
+                dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { () -> Void in //get url *slow
                     if let imageData = NSData(contentsOfURL: profileImageURL) { //blocks main thread
                         dispatch_async(dispatch_get_main_queue()) {
-                            tweetProfileImageView?.image = UIImage(data: imageData)
+                            self.tweetProfileImageView?.image = UIImage(data: imageData)
                         }
                     }
                 }
@@ -123,5 +122,16 @@ class TweetTableViewCell: UITableViewCell {
             return false
         }
         return false
+    }
+}
+extension String {
+    var ns: NSString {
+        return self as NSString
+    }
+    var pathExtension: String? {
+        return ns.pathExtension
+    }
+    var lastPathComponent: String? {
+        return ns.lastPathComponent
     }
 }

@@ -25,8 +25,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     private func fetchImage() {
         if let url = imageURL {
             spinner.startAnimating()
-            let qos = Int(QOS_CLASS_USER_INITIATED.value)
-            dispatch_async(dispatch_get_global_queue(qos, 0)) { () -> Void in //get .jpg file *slow
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0)) { () -> Void in //get .jpg file *slow
                 let imageData = NSData(contentsOfURL: url)
                 dispatch_async(dispatch_get_main_queue()) {
                     if url == self.imageURL { //mutiple selects...get last
@@ -100,7 +99,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate {
     }
 
     @IBAction func savePhoto(sender: UIBarButtonItem) {
-        if let imageData = UIImageJPEGRepresentation(image, 1.0) {
+        if let imageData = UIImageJPEGRepresentation(image!, 1.0) {
             let library = ALAssetsLibrary()
             library.writeImageDataToSavedPhotosAlbum(imageData, metadata: nil, completionBlock: nil)
         }

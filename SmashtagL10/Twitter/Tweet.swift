@@ -15,7 +15,7 @@ import UIKit
 // note carefully the comments on the two range properties in an IndexedKeyword
 // Tweet instances re created by fetching from Twitter using a TwitterRequest
 
-public class Tweet : Printable
+public class Tweet : CustomStringConvertible
 {
     public var text: String
     public var user: User
@@ -26,7 +26,7 @@ public class Tweet : Printable
     public var urls = [IndexedKeyword]()
     public var userMentions = [IndexedKeyword]()
 
-    public struct IndexedKeyword: Printable
+    public struct IndexedKeyword: CustomStringConvertible
     {
         public var keyword: String              // will include # or @ or http:// prefix
         public var range: Range<String.Index>   // index into the Tweet's text property only
@@ -36,15 +36,24 @@ public class Tweet : Printable
             let indices = data?.valueForKeyPath(TwitterKey.Entities.Indices) as? NSArray
             if let startIndex = (indices?.firstObject as? NSNumber)?.integerValue {
                 if let endIndex = (indices?.lastObject as? NSNumber)?.integerValue {
-                    let length = count(inText)
+                    let length = inText.characters.count
                     if length > 0 {
                         let start = max(min(startIndex, length-1), 0)
                         let end = max(min(endIndex, length), 0)
                         if end > start {
-                            self.range = advance(inText.startIndex, start)...advance(inText.startIndex, end-1)
+                            //var str = "Hello Swift!"
+                            //str.startIndex // first index
+                            //str.endIndex // end index
+                            //str[str.startIndex.advancedBy(4)...str.startIndex.advancedBy(8)] // get characters in range index 4 to 8
+                            //str.substringToIndex(str.startIndex.advancedBy(5)) // returns string up to the 5th character
+                            //str.substringFromIndex(str.startIndex.advancedBy(5)) // returns string from the 5th character
+                            self.range = Range(start: inText.startIndex.advancedBy(start), end: inText.startIndex.advancedBy(end)) //advance(inText.startIndex, start)...advance(inText.startIndex, end-1)
                             self.keyword = inText.substringWithRange(self.range)
+//                            print(inText.substringWithRange(self.range))
+//                            print(keyword)
                             if prefix != nil && !self.keyword.hasPrefix(prefix!) && start > 0 {
-                                self.range = advance(inText.startIndex, start-1)...advance(inText.startIndex, end-2)
+                                self.range = Range(start: inText.startIndex.advancedBy(start-1), end: inText.startIndex.advancedBy(end-1)) //advance(inText.startIndex, start-1)...advance(inText.startIndex, end-2)
+                                //print(inText.substringWithRange(self.range))
                                 self.keyword = inText.substringWithRange(self.range)
                             }
                             if prefix == nil || self.keyword.hasPrefix(prefix!) {
@@ -135,7 +144,7 @@ private extension NSString {
         var end = max(min(nearRange.location + nearRange.length, length), 0)
         var done = false
         while !done {
-            let range = rangeOfString(substring as String, options: NSStringCompareOptions.allZeros, range: NSMakeRange(start, end-start))
+            let range = rangeOfString(substring as String, options: NSStringCompareOptions(), range: NSMakeRange(start, end-start))
             if range.location != NSNotFound {
                 return range
             }
@@ -146,7 +155,6 @@ private extension NSString {
         return NSMakeRange(NSNotFound, 0)
     }
 }
-
 private extension String {
     var asTwitterDate: NSDate? {
         get {
@@ -156,3 +164,31 @@ private extension String {
         }
     }
 }
+//    func rangesOfString(findStr:String) -> [Range<String.Index>] {
+//        var arr = [Range<String.Index>]()
+//        var startInd = self.startIndex
+//        // check first that the first character of search string exists
+//        if self.characters.contains(findStr.characters.first!) {
+//            // if so set this as the place to start searching
+//            startInd = self.characters.indexOf(findStr.characters.first!)!
+//        }
+//        else {
+//            // if not return empty array
+//            return arr
+//        }
+//        var i = self.startIndex.distanceTo(startInd)
+//        while i<=self.characters.count-findStr.characters.count {
+//            if self[self.startIndex.advancedBy(i)..<self.startIndex.advancedBy(i+findStr.characters.count)] == findStr {
+//                arr.append(Range(start:self.startIndex.advancedBy(i),end:self.startIndex.advancedBy(i+findStr.characters.count)))
+//                i = i+findStr.characters.count
+//            }
+//            else {
+//                i++
+//            }
+//        }
+//        return arr
+//    }
+//} // try further optimisation by jumping to next index of first search character after every find
+
+
+//"a very good hello, hello".rangesOfString("hello")

@@ -22,11 +22,11 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         if textField == searchTextField {
             textField.resignFirstResponder()
-            searchText = textField.text
+            searchText = textField.text!
         }
         return true
     }
-    var searchText: String = "#Standford" {
+    var searchText: String = "#Stanford" {
         didSet {
             lastSucessfulRequest = nil
             searchTextField?.text = searchText
@@ -179,9 +179,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
         return true
     }
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject!) {
-        var destination = segue.destinationViewController as? UIViewController
+        var destination = segue.destinationViewController
         if let navCon = destination as? UINavigationController {
-            destination = navCon.visibleViewController
+            destination = navCon.visibleViewController!
             let selectedIndex = self.tableView.indexPathForCell(sender as! UITableViewCell)
             if let cell = tableView(tableView, cellForRowAtIndexPath: selectedIndex!) as? TweetTableViewCell {
                 let tweet = cell.tweet
