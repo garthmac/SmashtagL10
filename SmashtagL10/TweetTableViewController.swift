@@ -26,7 +26,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
         }
         return true
     }
-    var searchText: String = "#Stanford" {
+    var searchText: String = "" {
         didSet {
             lastSucessfulRequest = nil
             searchTextField?.text = searchText
@@ -59,10 +59,14 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
     }
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        if searchText == "" {
-            if let query = NSUserDefaults.standardUserDefaults().stringForKey("HashTag") {
+        if let query = NSUserDefaults.standardUserDefaults().stringForKey("HashTag") {
+            if !query.isEmpty && searchText != query {
                 searchText = query
+            } else {
+                searchText = Constants.DefaultSearchText
             }
+        } else {
+            searchText = Constants.DefaultSearchText
         }
     }
     override func viewWillAppear(animated: Bool) {
@@ -216,8 +220,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
     }
     // MARK: - Constants
     private struct Constants {
-        static let ShowImageSegue = "Show Image"
+        static let DefaultSearchText = "#Stanford"
         static let OpenURLs = "TweetTableViewController.OpenURLs"
+        static let ShowImageSegue = "Show Image"
         static let WebSegueIdentifier = "Show URL"
     }
 
