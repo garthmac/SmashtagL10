@@ -57,16 +57,18 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
             tableView.endUpdates()
         }
     }
+    lazy var hashTag: String = {
+        if let hashTag = NSUserDefaults.standardUserDefaults().stringForKey(Constants.HashTag) {
+            return hashTag
+        }
+        return Constants.DefaultSearchText
+    }()
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        if let query = NSUserDefaults.standardUserDefaults().stringForKey("HashTag") {
-            if !query.isEmpty && searchText != query {
-                searchText = query
-            } else {
-                searchText = Constants.DefaultSearchText
-            }
-        } else {
+        if hashTag == "" {
             searchText = Constants.DefaultSearchText
+        } else if searchText == "" {
+            searchText = hashTag
         }
     }
     override func viewWillAppear(animated: Bool) {
@@ -126,8 +128,10 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
         udObserver = NSNotificationCenter.defaultCenter().addObserverForName(NSUserDefaultsDidChangeNotification,
             object: nil,
             queue: nil) { (notification) -> Void in
-                if let text = NSUserDefaults.standardUserDefaults().stringForKey("HashTag") {
-                    self.searchText = text
+                if let text = NSUserDefaults.standardUserDefaults().stringForKey(Constants.HashTag) {
+                    if self.searchText != text {
+                        self.searchText = text
+                    }
                 }
         }
     }
@@ -159,7 +163,9 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
         cell.delegate = self
         return cell
     }
-
+    private var canOpenURLs: Bool { // a computed property instead of func
+        get { return NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) }  //*********need this switched on!!!!!!!!in Settings
+    }
     // MARK: - Navigation
     override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
         if identifier == Constants.ShowImageSegue {
@@ -173,7 +179,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
                         if tweet!.urls.first!.keyword.hasSuffix("…") {
                             return false
                         }
-                        if !NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
+                        if !canOpenURLs {
                             return false
                         }
                     }
@@ -202,7 +208,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
                     if tweet!.urls.count > 0 {
                         if let wvc = destination as? WebViewController {
                             if let url = NSURL(string: tweet!.urls.first!.keyword) {
-                                if NSUserDefaults.standardUserDefaults().boolForKey(Constants.OpenURLs) {
+                                if canOpenURLs {
                                     //UIApplication.sharedApplication().openURL(url)
                                     wvc.title = "\(url)"
                                     wvc.url = url
@@ -221,6 +227,7 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate, Tabl
     // MARK: - Constants
     private struct Constants {
         static let DefaultSearchText = "#Stanford"
+        static let HashTag = "HashTag"
         static let OpenURLs = "TweetTableViewController.OpenURLs"
         static let ShowImageSegue = "Show Image"
         static let WebSegueIdentifier = "Show URL"
